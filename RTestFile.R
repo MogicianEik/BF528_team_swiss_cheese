@@ -2,7 +2,7 @@ data<-read.csv('normalized_expression.csv')
 filter1<-read.csv('Project1_4_1.csv')
 nrow(data)
 ncol(data)
-patientscolnames(data)
+patients<-colnames(data)
 
 
 
