@@ -131,7 +131,7 @@ cluster.2<-filtered[,c("Unnamed..0" ,cluster2)]
 welchn<-c()
 welchstat<-c()
 welchp<-c()
-welchn<-append(welchn,cluster.1[,1])
+welchn<-cluster.1[,1]
 for(i in 1:nrow(cluster.1)){
   wel<-t.test(cluster.1[i,2:ncol(cluster.1)],cluster.2[i,2:ncol(cluster.2)])
   welchstat<-append(welchstat,as.numeric(wel['statistic']))
@@ -143,17 +143,77 @@ welch$name<-welchn
 welch$t.statistic<-welchstat
 welch$p.value<-welchp
 welch$p.adjusted<-welchpa
+
+welch<-as.data.frame(welch)
+weg <- as.data.frame(lapply(welch, unlist))
+
 differ<-c()
 for(i in 1:nrow(welch)){
   if(welch[i,'p.value']<0.05 & welch[i,'p.adjusted']<0.05){
     differ<-append(differ,i)
   }
 }
-differential_expression_results<-data.frame(welch[differ,])
-differential_expression_results[] <- lapply(differential_expression_results, function(x) if(is.list(x)) unlist(x))
+differential_expression_results<-data.frame(weg[differ,])
+
 write.csv(differential_expression_results,'differential_expression_results.csv')
 
-welch[] <- lapply(welch, function(x) if(is.list(x)) unlist(x))
-write.csv(welch,'welch.csv')
+
+write.csv(weg,'welch.csv')
 write.csv(step2[ind.1,],'output4_5.csv')
 write.csv(filtered,'output4_4.csv')
+
+
+filtered<-(step2[intersect(ind.1,ind.1),])
+dist_mat <- dist(t(filtered[,3:136]), method = 'euclidean')
+agnes(x = t(filtered[, 3:136]), method = "average")$ac 
+agnes(x = t(filtered[, 3:136]), method = "complete")$ac 
+agnes(x = t(filtered[, 3:136]), method = "single")$ac
+agnes(x = t(filtered[, 3:136]), method = "ward")$ac 
+agnes(x = t(filtered[, 3:136]), method = "ward")
+hclust_avg <- hclust(dist_mat, method = 'ward.D')
+par(mar=c(1, 1, 1, 1))
+cut<-cutree(hclust_avg,k=2)
+sum(cut==1)
+sum(cut==2)
+patients<-colnames(filtered)
+patients<-patients[3:length(patients)]
+cluster1<-c()
+cluster2<-c()
+for(i in 1:length(patients)){
+  if(cut[i]==1){
+    cluster1<-append(cluster1,patients[i]) 
+  }
+  if(cut[i]==2){
+    cluster2<-append(cluster2,patients[i]) 
+  }
+}
+cluster.1<-filtered[,c("Unnamed..0" ,cluster1)]
+cluster.2<-filtered[,c("Unnamed..0" ,cluster2)]
+welchn<-c()
+welchstat<-c()
+welchp<-c()
+welchn<-cluster.1[,1]
+for(i in 1:nrow(cluster.1)){
+  wel<-t.test(cluster.1[i,2:ncol(cluster.1)],cluster.2[i,2:ncol(cluster.2)])
+  welchstat<-append(welchstat,as.numeric(wel['statistic']))
+  welchp<-append(welchp,wel['p.value'])
+} 
+welchpa<-p.adjust(welchp)
+welch<-data.frame(matrix(ncol=0,nrow=length(welchn)))
+welch$name<-welchn
+welch$t.statistic<-welchstat
+welch$p.value<-welchp
+welch$p.adjusted<-welchpa
+
+welch<-as.data.frame(welch)
+weg <- as.data.frame(lapply(welch, unlist))
+
+differ<-c()
+for(i in 1:nrow(welch)){
+  if(welch[i,'p.value']<0.05 & welch[i,'p.adjusted']<0.05){
+    differ<-append(differ,i)
+  }
+}
+differential_expression_results_5_6<-data.frame(weg[differ,])
+write.csv(differential_expression_results_5_6,'differential_expression_results_5_6.csv')
+write.csv(weg,'welch_5_6.csv')
