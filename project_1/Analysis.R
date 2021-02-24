@@ -229,3 +229,11 @@ for(i in 1:length(colm)){
 }
 
 heatmap.2(hot,dendrogram = 'none',ColSideColors = colors)
+# package.install('superheat')
+library(superheat)
+superheat(hot,
+          # scale the matrix columns
+          scale = TRUE,
+          # add row dendrogram
+          n.clusters.cols = 2,
+          n.clusters.rows = 2)
