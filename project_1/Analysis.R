@@ -149,7 +149,7 @@ weg <- as.data.frame(lapply(welch, unlist))
 
 differ<-c()
 for(i in 1:nrow(welch)){
-  if(welch[i,'p.value']<0.05 & welch[i,'p.adjusted']<0.05){
+  if(welch[i,'p.adjusted']<0.05){
     differ<-append(differ,i)
   }
 }
@@ -210,10 +210,22 @@ weg <- as.data.frame(lapply(welch, unlist))
 
 differ<-c()
 for(i in 1:nrow(welch)){
-  if(welch[i,'p.value']<0.05 & welch[i,'p.adjusted']<0.05){
+  if( welch[i,'p.adjusted']<0.05){
     differ<-append(differ,i)
   }
 }
 differential_expression_results_5_6<-data.frame(weg[differ,])
 write.csv(differential_expression_results_5_6,'differential_expression_results_5_6.csv')
 write.csv(weg,'welch_5_6.csv')
+
+cancer<-read.csv('proj_metadata.csv')
+hot<-(as.matrix(filtered[,3:ncol(filtered)]))
+colon<-(filtered[,3:ncol(filtered)])
+colm<-(cancer[,'cit.coloncancermolecularsubtype'])
+colors<-c()
+for(i in 1:length(colm)){
+  if(colm[i]=='C3'){colors<-append(colors,'red')}
+  if(colm[i]!='C3'){colors<-append(colors,'blue')}
+}
+
+heatmap.2(hot,dendrogram = 'none',ColSideColors = colors)
